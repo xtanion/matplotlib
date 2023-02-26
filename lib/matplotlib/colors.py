@@ -1214,8 +1214,8 @@ class Normalize:
             are mapped to 0 or 1, whichever is closer, and masked values are
             set to 1.  If ``False`` masked values remain masked.
 
-            Clipping silently defeats the purpose of setting the over, under,
-            and masked colors in a colormap, so it is likely to lead to
+            Clipping silently defeats the purpose of setting the over and
+            under colors in a colormap, so it is likely to lead to
             surprises; therefore the default is ``clip=False``.
 
         Notes
@@ -1311,7 +1311,7 @@ class Normalize:
         ----------
         value
             Data to normalize.
-        clip : bool
+        clip : bool, optional
             If ``None``, defaults to ``self.clip`` (which defaults to
             ``False``).
 
@@ -1450,7 +1450,7 @@ class TwoSlopeNorm(Normalize):
 
     def __call__(self, value, clip=None):
         """
-        Map value to the interval [0, 1]. The clip argument is unused.
+        Map value to the interval [0, 1]. The *clip* argument is unused.
         """
         result, is_scalar = self.process_value(value)
         self.autoscale_None(result)  # sets self.vmin, self.vmax if None
@@ -1499,6 +1499,10 @@ class CenteredNorm(Normalize):
             *vcenter* + *halfrange* is ``1.0`` in the normalization.
             Defaults to the largest absolute difference to *vcenter* for
             the values in the dataset.
+        clip : bool, default: False
+            If ``True`` values falling outside the range ``[vmin, vmax]``,
+            are mapped to 0 or 1, whichever is closer, and masked values are
+            set to 1.  If ``False`` masked values remain masked.
 
         Examples
         --------
@@ -1775,8 +1779,8 @@ class FuncNorm(Normalize):
         are mapped to 0 or 1, whichever is closer, and masked values are
         set to 1.  If ``False`` masked values remain masked.
 
-        Clipping silently defeats the purpose of setting the over, under,
-        and masked colors in a colormap, so it is likely to lead to
+        Clipping silently defeats the purpose of setting the over and
+        under colors in a colormap, so it is likely to lead to
         surprises; therefore the default is ``clip=False``.
     """
 
@@ -1858,9 +1862,34 @@ class AsinhNorm(Normalize):
 
 
 class PowerNorm(Normalize):
-    """
+    r"""
     Linearly map a given value to the 0-1 range and then apply
     a power-law normalization over that range.
+
+    Parameters
+    ----------
+    gamma : float
+        Power law exponent.
+    vmin, vmax : float or None
+        If *vmin* and/or *vmax* is not given, they are initialized from the
+        minimum and maximum value, respectively, of the first input
+        processed; i.e., ``__call__(A)`` calls ``autoscale_None(A)``.
+    clip : bool, default: False
+        If ``True`` values falling outside the range ``[vmin, vmax]``,
+        are mapped to 0 or 1, whichever is closer, and masked values
+        remain masked.
+
+        Clipping silently defeats the purpose of setting the over and under
+        colors, so it is likely to lead to surprises; therefore the default
+        is ``clip=False``.
+
+    Notes
+    -----
+    The normalization formula is
+
+    .. math::
+
+        \left ( \frac{x - v_{min}}{v_{max}  - v_{min}} \right )^{\gamma}
     """
     def __init__(self, gamma, vmin=None, vmax=None, clip=False):
         super().__init__(vmin, vmax, clip)
@@ -2398,7 +2427,8 @@ class LightSource:
             full illumination or shadow (and clipping any values that move
             beyond 0 or 1). Note that this is not visually or mathematically
             the same as vertical exaggeration.
-        Additional kwargs are passed on to the *blend_mode* function.
+        **kwargs
+            Additional kwargs are passed on to the *blend_mode* function.
 
         Returns
         -------
@@ -2459,7 +2489,8 @@ class LightSource:
             The x-spacing (columns) of the input *elevation* grid.
         dy : number, optional
             The y-spacing (rows) of the input *elevation* grid.
-        Additional kwargs are passed on to the *blend_mode* function.
+        **kwargs
+            Additional kwargs are passed on to the *blend_mode* function.
 
         Returns
         -------
